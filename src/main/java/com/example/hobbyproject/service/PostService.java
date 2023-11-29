@@ -142,4 +142,5 @@ public class PostService {
         Pageable pageable = PageRequest.of(0, size, Sort.Direction.DESC, "regDate");
         return postRepository.findAll(pageable).map(PostModel::fromEntity); //PostModel 클래스의 fromEntity)
     }
+
 }
