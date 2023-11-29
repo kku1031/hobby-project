@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3307/hobbyproject
+    username: root
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+
+    properties:
+      format_sql: true
+      hibernate:
+        show-sql: true
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
