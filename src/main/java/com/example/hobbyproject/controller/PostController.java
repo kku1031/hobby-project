@@ -2,6 +2,9 @@ package com.example.hobbyproject.controller;
 
 
 import com.example.hobbyproject.error.CreateResponseError;
+import com.example.hobbyproject.exception.AlreadyDeletedException;
+import com.example.hobbyproject.exception.DuplicatePostException;
+import com.example.hobbyproject.exception.PostNotFoundException;
 import com.example.hobbyproject.model.PostCreateInput;
 import com.example.hobbyproject.model.PostDeleteInput;
 import com.example.hobbyproject.model.PostModel;
