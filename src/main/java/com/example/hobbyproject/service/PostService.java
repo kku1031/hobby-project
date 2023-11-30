@@ -1,29 +1,24 @@
 package com.example.hobbyproject.service;
 
 import com.example.hobbyproject.entity.Post;
-import com.example.hobbyproject.exception.AlreadyDeletedException;
-import com.example.hobbyproject.exception.DuplicatePostException;
-import com.example.hobbyproject.exception.PostNotFoundException;
+import com.example.hobbyproject.exception.PostException;
+import com.example.hobbyproject.exception.PostExceptionType;
 import com.example.hobbyproject.model.PostCreateInput;
 import com.example.hobbyproject.model.PostDeleteInput;
 import com.example.hobbyproject.model.PostModel;
 import com.example.hobbyproject.model.PostUpdateInput;
 import com.example.hobbyproject.repository.PostRepository;
-
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +39,7 @@ public class PostService {
     public PostModel getPostById(Long id) {
         // 특정 ID의 게시글을 조회하고 PostModel로 변환하여 반환
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("조회할 게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
         return PostModel.fromEntity(post);
     }
 
@@ -52,7 +47,7 @@ public class PostService {
     @Transactional
     public PostModel incrementHits(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("조회할 게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
 
         post.setHits(post.getHits() + 1);
 
@@ -67,7 +62,7 @@ public class PostService {
         // 글 작성 시 동일 제목, 내용 방지(중복 제거)
         if (postRepository.existsByTitleOrContents(postCreateInput.getTitle(), postCreateInput.getContents())) {
             // 중복된 경우 처리 (예: 예외 발생)
-            throw new DuplicatePostException("이미 존재하는 제목 또는 내용입니다.");
+            throw new PostException(PostExceptionType.DUPLICATE_POST);
         }
 
         // hits와 likes는 자동으로 0으로 초기화됨
@@ -89,7 +84,7 @@ public class PostService {
     public PostModel updatePost(Long id, PostUpdateInput updateInput) {
         // 게시글 id 조회
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("수정할 게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
 
         // 이미 생성된 객체의 필드를 업데이트할 때는 필드를 직접 설정하는 것이 편리함(빌더 패턴 X)
         post.setTitle(updateInput.getTitle());
@@ -105,10 +100,10 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("삭제할 게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
 
         if (post.isDeleted()) {
-            throw new AlreadyDeletedException("이미 삭제된 글입니다.");
+            throw new PostException(PostExceptionType.ALREADY_DELETED);
         }
 
         post.setDeleted(true);
@@ -122,7 +117,7 @@ public class PostService {
     @Transactional
     public void deletePosts(PostDeleteInput deleteInput) {
         List<Post> postList = postRepository.findByIdIn(deleteInput.getIdList())
-                .orElseThrow(() -> new PostNotFoundException("삭제할 게시글을 찾을 수 없습니다"));
+                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
 
         postList.forEach(e -> {
             e.setDeleted(true);
@@ -142,4 +137,5 @@ public class PostService {
         Pageable pageable = PageRequest.of(0, size, Sort.Direction.DESC, "regDate");
         return postRepository.findAll(pageable).map(PostModel::fromEntity); //PostModel 클래스의 fromEntity)
     }
+
 }
