@@ -9,7 +9,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PostException.class)
     public ResponseEntity<String> handlePostException(PostException exception) {
-        return new ResponseEntity<>(exception.getMessage(), exception.getExceptionType().getHttpStatus());
+        return new ResponseEntity<>(exception.getMessage(), exception.getHttpStatus());
     }
 
 }
