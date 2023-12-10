@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
-public class PostUpdateInput {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserInputFind {
 
-  private String title;
-  private String contents;
-  private String writer;
+    private String userName;
+    private String phone;
 
 }

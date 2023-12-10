@@ -5,14 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 @Data
-public class PostUpdateInput {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserLoginToken {
 
-  private String title;
-  private String contents;
-  private String writer;
+    private String token;
 
 }
