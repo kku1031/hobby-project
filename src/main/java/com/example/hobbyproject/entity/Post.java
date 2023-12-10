@@ -2,11 +2,7 @@ package com.example.hobbyproject.entity;
 
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +21,10 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
+
+    @ManyToOne
+    @JoinColumn
+    private User user;
 
     //글 작성 시 동일 제목, 내용 방지(중복 제거)
     @Column(unique = true)

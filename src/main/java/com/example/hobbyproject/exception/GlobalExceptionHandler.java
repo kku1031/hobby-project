@@ -12,4 +12,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), exception.getHttpStatus());
     }
 
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<String> handleUserException(UserException userException) {
+        return new ResponseEntity<>(userException.getMessage(), userException.getHttpStatus());
+    }
+
 }
