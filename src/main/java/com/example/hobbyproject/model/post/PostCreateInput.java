@@ -1,4 +1,4 @@
-package com.example.hobbyproject.model;
+package com.example.hobbyproject.model.post;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

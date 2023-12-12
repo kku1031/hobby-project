@@ -2,7 +2,8 @@ package com.example.hobbyproject.controller;
 
 import com.example.hobbyproject.entity.PostLike;
 import com.example.hobbyproject.error.CreateResponseError;
-import com.example.hobbyproject.model.*;
+import com.example.hobbyproject.model.post.PostResponse;
+import com.example.hobbyproject.model.user.*;
 import com.example.hobbyproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

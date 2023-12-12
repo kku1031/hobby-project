@@ -1,4 +1,4 @@
-package com.example.hobbyproject.model;
+package com.example.hobbyproject.model.user;
 
 
 import lombok.AllArgsConstructor;

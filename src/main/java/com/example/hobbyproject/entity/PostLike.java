@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -20,13 +21,15 @@ public class PostLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JoinColumn
+    @JoinColumn(name = "post_id")
     @ManyToOne
     private Post post;
 
-    @JoinColumn
+    @JoinColumn(name = "user_id")
     @ManyToOne
     private User user;
 
+    @Column
+    private LocalDateTime likeDate;
 
 }

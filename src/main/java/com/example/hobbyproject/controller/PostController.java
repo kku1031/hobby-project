@@ -1,11 +1,12 @@
 package com.example.hobbyproject.controller;
 
 
+import com.example.hobbyproject.entity.Post;
 import com.example.hobbyproject.error.CreateResponseError;
-import com.example.hobbyproject.model.PostCreateInput;
-import com.example.hobbyproject.model.PostDeleteInput;
-import com.example.hobbyproject.model.PostModel;
-import com.example.hobbyproject.model.PostUpdateInput;
+import com.example.hobbyproject.model.post.PostCreateInput;
+import com.example.hobbyproject.model.post.PostDeleteInput;
+import com.example.hobbyproject.model.post.PostModel;
+import com.example.hobbyproject.model.post.PostUpdateInput;
 import com.example.hobbyproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -102,5 +103,11 @@ public class PostController {
         return ResponseEntity.ok(latestPosts);
     }
 
+    // 조회수 순서대로 게시글 보기 API
+    @GetMapping("/hits")
+    public ResponseEntity<List<Post>> getPostsByHits() {
+        List<Post> postsByHits = postService.getPostsByHits();
+        return ResponseEntity.ok(postsByHits);
+    }
 
 }
