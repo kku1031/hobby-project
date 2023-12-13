@@ -9,27 +9,32 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
 @Entity
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostLike {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @JoinColumn(name = "post_id")
     @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @JoinColumn(name = "user_id")
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(nullable = false)
+    private String contents;
+
     @Column
-    private LocalDateTime likeDate;
+    private LocalDateTime regDate;
+
+    @Column
+    private LocalDateTime updateDate;
 
 }

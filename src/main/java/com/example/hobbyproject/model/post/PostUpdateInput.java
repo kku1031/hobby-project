@@ -1,4 +1,4 @@
-package com.example.hobbyproject.model;
+package com.example.hobbyproject.model.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

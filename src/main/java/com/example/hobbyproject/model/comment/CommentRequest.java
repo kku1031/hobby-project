@@ -1,6 +1,5 @@
-package com.example.hobbyproject.model;
+package com.example.hobbyproject.model.comment;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class PostDeleteInput {
+public class CommentRequest {
 
-  private List<Long> idList;
+    private Long postId;
+    private Long userId;
+    private String contents;
 
 }

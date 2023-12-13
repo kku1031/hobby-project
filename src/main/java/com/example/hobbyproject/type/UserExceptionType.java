@@ -1,4 +1,4 @@
-package com.example.hobbyproject.exception;
+package com.example.hobbyproject.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

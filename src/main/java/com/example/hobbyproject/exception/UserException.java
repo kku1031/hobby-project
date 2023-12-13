@@ -1,5 +1,6 @@
 package com.example.hobbyproject.exception;
 
+import com.example.hobbyproject.type.UserExceptionType;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

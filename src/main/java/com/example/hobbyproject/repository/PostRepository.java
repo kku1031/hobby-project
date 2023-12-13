@@ -2,6 +2,8 @@ package com.example.hobbyproject.repository;
 
 import com.example.hobbyproject.entity.Post;
 import com.example.hobbyproject.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +21,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 특정 사용자가 작성한 게시글 목록을 가져옴
     List<Post> findByUser(User user);
+
+    //좋아요 순서대로 게시글 목록 조회
+    List<Post> findAllByOrderByLikesDesc();
+
+    //조회수 순서대로 게시글 목록 조회
+    List<Post> findAllByOrderByHitsDesc();
 
 }

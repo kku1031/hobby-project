@@ -2,17 +2,15 @@ package com.example.hobbyproject.service;
 
 import com.example.hobbyproject.entity.Post;
 import com.example.hobbyproject.exception.PostException;
-import com.example.hobbyproject.exception.PostExceptionType;
-import com.example.hobbyproject.model.PostCreateInput;
-import com.example.hobbyproject.model.PostDeleteInput;
-import com.example.hobbyproject.model.PostModel;
-import com.example.hobbyproject.model.PostUpdateInput;
+import com.example.hobbyproject.model.post.PostCreateInput;
+import com.example.hobbyproject.model.post.PostDeleteInput;
+import com.example.hobbyproject.model.post.PostModel;
+import com.example.hobbyproject.model.post.PostUpdateInput;
+import com.example.hobbyproject.repository.PostLikeRepository;
 import com.example.hobbyproject.repository.PostRepository;
+import com.example.hobbyproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,12 +18,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.hobbyproject.type.PostExceptionType.*;
+
 @Service
 @RequiredArgsConstructor
 // PostRepository를 주입받아서 게시글 조회 및 작성과 관련된 로직을 처리
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final UserRepository userRepository;
 
     // 게시글 전체 조회
     public List<PostModel> getAllPosts() {
@@ -39,7 +41,7 @@ public class PostService {
     public PostModel getPostById(Long id) {
         // 특정 ID의 게시글을 조회하고 PostModel로 변환하여 반환
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
         return PostModel.fromEntity(post);
     }
 
@@ -47,7 +49,7 @@ public class PostService {
     @Transactional
     public PostModel incrementHits(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         post.setHits(post.getHits() + 1);
 
@@ -57,12 +59,12 @@ public class PostService {
     }
 
     // 게시글 작성
-    public PostModel createPost(PostCreateInput postCreateInput) {
+    public PostModel createPost(PostCreateInput postCreateInput) throws PostException {
 
         // 글 작성 시 동일 제목, 내용 방지(중복 제거)
         if (postRepository.existsByTitleOrContents(postCreateInput.getTitle(), postCreateInput.getContents())) {
             // 중복된 경우 처리 (예: 예외 발생)
-            throw new PostException(PostExceptionType.DUPLICATE_POST);
+            throw new PostException(DUPLICATE_POST);
         }
 
         // hits와 likes는 자동으로 0으로 초기화됨
@@ -84,7 +86,7 @@ public class PostService {
     public PostModel updatePost(Long id, PostUpdateInput updateInput) {
         // 게시글 id 조회
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         // 이미 생성된 객체의 필드를 업데이트할 때는 필드를 직접 설정하는 것이 편리함(빌더 패턴 X)
         post.setTitle(updateInput.getTitle());
@@ -100,10 +102,10 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         if (post.isDeleted()) {
-            throw new PostException(PostExceptionType.ALREADY_DELETED);
+            throw new PostException(ALREADY_DELETED);
         }
 
         post.setDeleted(true);
@@ -117,7 +119,7 @@ public class PostService {
     @Transactional
     public void deletePosts(PostDeleteInput deleteInput) {
         List<Post> postList = postRepository.findByIdIn(deleteInput.getIdList())
-                .orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
         postList.forEach(e -> {
             e.setDeleted(true);
@@ -137,4 +139,11 @@ public class PostService {
         Pageable pageable = PageRequest.of(0, size, Sort.Direction.DESC, "regDate");
         return postRepository.findAll(pageable).map(PostModel::fromEntity); //PostModel 클래스의 fromEntity)
     }
+
+    // 조회수 순서대로 게시글 보는 API
+    public List<Post> getPostsByHits() {
+        return postRepository.findAllByOrderByHitsDesc();
+    }
+
+
 }
