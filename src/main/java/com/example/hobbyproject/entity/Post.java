@@ -2,6 +2,7 @@ package com.example.hobbyproject.entity;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
