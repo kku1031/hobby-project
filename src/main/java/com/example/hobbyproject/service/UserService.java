@@ -8,10 +8,10 @@ import com.example.hobbyproject.entity.User;
 import com.example.hobbyproject.exception.UserException;
 import com.example.hobbyproject.model.post.PostResponse;
 import com.example.hobbyproject.model.user.*;
-import com.example.hobbyproject.type.UserExceptionType;
 import com.example.hobbyproject.repository.PostLikeRepository;
 import com.example.hobbyproject.repository.PostRepository;
 import com.example.hobbyproject.repository.UserRepository;
+import com.example.hobbyproject.type.UserExceptionType;
 import com.example.hobbyproject.utils.PasswordUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,15 +57,17 @@ public class UserService {
         return postResponseList;
     }
 
+    // 중복된 이메일 검증
+    private void validateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserException(UserExceptionType.DUPLICATE_EMAIL);
+        }
+    }
+
     // 회원 등록
     public UserModel registerUser(UserInput userInput) {
 
-        Optional<User> existEmail = userRepository.findByEmail(userInput.getEmail());
-
-        // 이메일 중복
-        if (existEmail.isPresent()) {
-            throw new UserException(UserExceptionType.DUPLICATE_EMAIL);
-        }
+        validateEmail(userInput.getEmail());
 
         //암호화하여 저장
         String encryptPassword = PasswordUtils.hashPassword(userInput.getPassword());

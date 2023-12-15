@@ -18,14 +18,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
 
     // 특정 회원 정보 조회(보안상 비밀번호, 가입일, 회원 정보 수정일 노출 X)
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
 
         UserResponse userResponse = userService.getUserById(id);
 
@@ -33,18 +33,16 @@ public class UserController {
     }
 
     // 특정 회원이 작성한 글 목록 반환
-    @GetMapping("/{list}/{id}")
-    public ResponseEntity<List<PostResponse>> getPostsByUserId(@PathVariable Long id) {
-
+    @GetMapping("/{lists}/{id}")
+    public ResponseEntity<?> getPostsByUserId(@PathVariable Long id) {
         List<PostResponse> postsByUserId = userService.getPostsByUserId(id);
-
         return ResponseEntity.ok(postsByUserId);
     }
 
     // 회원 등록
-    @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody @Valid UserInput userInput,
-                                               Errors errors) {
+    @PostMapping
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserInput userInput,
+                                          Errors errors) {
 
         //필수 항목 미입력시 에러 처리(Object는 FieldError 반환)
         if (errors.hasErrors()) {
@@ -62,18 +60,20 @@ public class UserController {
 
     }
 
-    // 회원 정보 수정
-    @PutMapping("/update/{id}")
-    public ResponseEntity<UserModel> updateUser(@PathVariable Long id,
-                                                @RequestBody @Valid UserUpdate userUpdate) {
+    // 회원 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id,
+                                        @RequestBody @Valid UserUpdate userUpdate) {
 
         UserModel updatedUser = userService.updateUser(id, userUpdate);
 
         return ResponseEntity.ok(updatedUser);
     }
 
-    // 비밀번호 수정
-    @PatchMapping("/password/{id}")
+    // 비밀번호 수정(리소스의 부분적인 수정은 patch가 적절)
+    // 회원 엔터티에 여러 필드가 있고, 비밀번호만을 업데이트한다면 @PatchMapping
+    // 비밀번호만을 가지고 있는 경우에는 @PutMapping 적절.
+    @PatchMapping("/{id}/password")
     public ResponseEntity<?> updateUserPassword(@PathVariable Long id,
                                                 @RequestBody @Valid UserInputPassword userInputPassword,
                                                 Errors errors) {
@@ -93,15 +93,15 @@ public class UserController {
     }
 
     // 회원 삭제(성매매,불법도박 등 범죄 후기글. 회원 정보는 삭제하지만, 그 사람이 쓴 글은 추론 할 수 있게 남겨둠.
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<UserModel> deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         UserModel deletedUser = userService.deleteUser(id);
         return ResponseEntity.ok(deletedUser);
     }
 
     // 회원 ID(이메일)을 찾기(이름과 전화번호에 해당하는 이메일을 찾는다)
     @GetMapping("/find")
-    public ResponseEntity<UserResponse> findUser(@RequestBody UserInputFind userInputFind) {
+    public ResponseEntity<?> findUser(@RequestBody UserInputFind userInputFind) {
 
         UserResponse userResponse = userService.findUser(userInputFind);
 
@@ -109,9 +109,9 @@ public class UserController {
 
     }
 
-    // 회원 비밀번호 초기화
-    @GetMapping("/password/reset/{id}")
-    public ResponseEntity<UserModel> resetUserPassword(@PathVariable Long id) {
+    // 회원 비밀번호 초기화(리소스 수정에 더 가까워서 PUT 사용)
+    @PutMapping("/{id}/password/reset")
+    public ResponseEntity<?> resetUserPassword(@PathVariable Long id) {
 
         UserModel userModel = userService.resetUserPassword(id);
 
@@ -119,8 +119,8 @@ public class UserController {
     }
 
     // 내가 좋아요한 게시글을 보는 API
-    @GetMapping("/posts/like/{id}")
-    public ResponseEntity<List<PostLike>> likePost(@PathVariable Long id) {
+    @GetMapping("/{id}/posts/like")
+    public ResponseEntity<?> likePost(@PathVariable Long id) {
 
         List<PostLike> postLikeList = userService.likePost(id);
 
@@ -142,5 +142,6 @@ public class UserController {
         UserLoginToken token = userService.createToken(userLogin);
         return ResponseEntity.ok(token);
     }
+
 
 }
