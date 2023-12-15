@@ -1,6 +1,5 @@
 package com.example.hobbyproject.controller;
 
-import com.example.hobbyproject.entity.Comment;
 import com.example.hobbyproject.error.CreateResponseError;
 import com.example.hobbyproject.model.comment.CommentRequest;
 import com.example.hobbyproject.model.comment.CommentUserInput;
@@ -18,37 +17,37 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/posts/comment")
+@RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentService commentService;
 
     // 특정 댓글 조회
     @GetMapping("/{commentId}")
-    public ResponseEntity<CommentUserInput> getComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> getComment(@PathVariable Long commentId) {
         CommentUserInput comment = commentService.getComment(commentId);
         return ResponseEntity.ok(comment);
     }
 
     // 특정 게시물의 모든 댓글 조회
-    @GetMapping("/all/{postId}")
-    public ResponseEntity<List<CommentUserInput>> getCommentsByPostId(@PathVariable Long postId) {
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<List<?>> getCommentsByPostId(@PathVariable Long postId) {
         List<CommentUserInput> comments = commentService.getCommentsByPostId(postId);
         return ResponseEntity.ok(comments);
     }
 
     // 댓글 생성
-    @PostMapping("/create")
-    public ResponseEntity<Object> createComment(@RequestBody @Valid CommentRequest commentRequest) {
+    @PostMapping("/posts/{postId}")
+    public ResponseEntity<?> createComment(@RequestBody @Valid CommentRequest commentRequest) {
         CommentUserInput createdComment = commentService.createComment(commentRequest);
         return ResponseEntity.ok(createdComment);
     }
 
     // 댓글 수정
-    @PutMapping("update/{commentId}")
-    public ResponseEntity<Object> updateComment(@PathVariable Long commentId,
-                                                @RequestBody @Valid CommentRequest commentRequest,
-                                                Errors errors) {
+    @PutMapping("/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId,
+                                           @RequestBody @Valid CommentRequest commentRequest,
+                                           Errors errors) {
         // 필수 항목 미입력시 에러 처리(Object는 FieldError 반환)
         if (errors.hasErrors()) {
             List<CreateResponseError> responseErrors = new ArrayList<>();
@@ -64,8 +63,8 @@ public class CommentController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("delete/{commentId}")
-    public ResponseEntity<Object> deleteComment(@PathVariable Long commentId) {
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
         return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }

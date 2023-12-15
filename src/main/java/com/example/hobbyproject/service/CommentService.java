@@ -106,12 +106,11 @@ public class CommentService {
         return CommentUserInput.fromCommentEntity(updatedComment);
     }
 
-    //댓글 삭제
     @Transactional
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
-
+        // 댓글 삭제
         commentRepository.delete(comment);
     }
 }
